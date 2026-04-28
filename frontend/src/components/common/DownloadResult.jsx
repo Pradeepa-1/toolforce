@@ -2,7 +2,7 @@ import { Download, CheckCircle } from 'lucide-react'
 import { useState } from 'react'
 
 // Backend runs on port 5000 — files served from /outputs
-const API_BASE = 'http://localhost:5000'
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 export default function DownloadResult({ url, filename, meta = {}, label = 'Download Result' }) {
   const [downloaded, setDownloaded] = useState(false)

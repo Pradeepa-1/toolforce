@@ -56,7 +56,8 @@ export default function BackgroundRemover() {
       fd.append('useApi', useApi)
 
       // ✅ FIX: Relative URL — works in both dev (proxied by Vite) and production
-      const { data } = await axios.post('/api/bgremove', fd, {
+    const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
+    const { data } = await axios.post(`${API_URL}/api/bgremove`, fd, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
@@ -77,7 +78,8 @@ export default function BackgroundRemover() {
     if (!result) return
     try {
       // result.downloadUrl is already a relative path like /outputs/bg-removed-xxx.png
-      const response = await fetch(result.downloadUrl)
+     const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
+      const response = await fetch(`${API_URL}${result.downloadUrl}`)
       const blob = await response.blob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')

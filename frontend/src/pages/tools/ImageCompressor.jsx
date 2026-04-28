@@ -25,7 +25,7 @@ export default function ImageCompressor() {
       fd.append('image', file)
       fd.append('quality', quality)
       fd.append('format', format)
-      const { data } = await axios.post('/api/compress', fd)
+     const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/api/compress`, fd)
       if (data.success) {
         setResult(data.data)
         toast.success(`Compressed! Saved ${data.data.savings}%`)

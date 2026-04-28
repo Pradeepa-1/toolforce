@@ -8,6 +8,8 @@ import { Spinner } from '../../components/common/Skeleton'
 import AffiliateCard from '../../components/affiliate/AffiliateCard'
 import { motion, AnimatePresence } from 'framer-motion'
 
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000'
+
 const GRADE_COLORS = {
   Excellent: 'text-green-400', Good: 'text-brand-400',
   Average: 'text-yellow-400', 'Below Average': 'text-orange-400', Poor: 'text-red-400'
@@ -20,10 +22,10 @@ Experienced software developer with 5 years of experience building scalable web 
 
 EXPERIENCE
 Senior Software Developer — TechCorp Inc (2020–Present)
-• Developed React and Node.js applications serving 100K+ users
-• Implemented microservices architecture reducing latency by 40%
-• Led a team of 6 developers across 3 product lines
-• Collaborated with product and design teams to deliver 15+ features
+- Developed React and Node.js applications serving 100K+ users
+- Implemented microservices architecture reducing latency by 40%
+- Led a team of 6 developers across 3 product lines
+- Collaborated with product and design teams to deliver 15+ features
 
 SKILLS
 JavaScript, TypeScript, React, Node.js, Python, SQL, PostgreSQL, MongoDB, AWS, Docker, Git, Agile, Scrum
@@ -31,14 +33,12 @@ JavaScript, TypeScript, React, Node.js, Python, SQL, PostgreSQL, MongoDB, AWS, D
 EDUCATION
 B.Tech Computer Science — State University (2019)`
 
-// Input mode: 'text' | 'file'
 export default function ATSChecker() {
-  const [mode, setMode]           = useState('file') // default to file upload
+  const [mode, setMode]             = useState('file')
   const [resumeText, setResumeText] = useState('')
-  const [jobDesc, setJobDesc]     = useState('')
-  const [loading, setLoading]     = useState(false)
-  const [result, setResult]       = useState(null)
-  // File upload state
+  const [jobDesc, setJobDesc]       = useState('')
+  const [loading, setLoading]       = useState(false)
+  const [result, setResult]         = useState(null)
   const [resumeFile, setResumeFile] = useState(null)
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef(null)
@@ -75,20 +75,18 @@ export default function ATSChecker() {
       let data
 
       if (mode === 'file') {
-        // ── File upload mode ──
         if (!resumeFile) return toast.error('Please upload a resume file')
         const fd = new FormData()
         fd.append('resume', resumeFile)
         if (jobDesc.trim()) fd.append('jobDescription', jobDesc)
-        const res = await axios.post('/api/ats/upload', fd, {
+        const res = await axios.post(`${API_URL}/api/ats/upload`, fd, {
           headers: { 'Content-Type': 'multipart/form-data' },
         })
         data = res.data
       } else {
-        // ── Text paste mode ──
         if (!resumeText.trim() || resumeText.length < 100)
           return toast.error('Please paste your resume text (min 100 chars)')
-        const res = await axios.post('/api/ats', { resumeText, jobDescription: jobDesc })
+        const res = await axios.post(`${API_URL}/api/ats`, { resumeText, jobDescription: jobDesc })
         data = res.data
       }
 
@@ -122,7 +120,6 @@ export default function ATSChecker() {
       >
         <div className="space-y-5">
 
-          {/* ── Mode Toggle ── */}
           <div className="card">
             <div className="flex gap-2 mb-5">
               {[
@@ -143,7 +140,6 @@ export default function ATSChecker() {
               ))}
             </div>
 
-            {/* ── File Upload ── */}
             {mode === 'file' && (
               <div className="space-y-4">
                 {!resumeFile ? (
@@ -174,7 +170,6 @@ export default function ATSChecker() {
                     <span className="btn-secondary text-xs py-2 px-4">Browse Files</span>
                   </label>
                 ) : (
-                  /* File selected */
                   <div
                     className="flex items-center gap-3 rounded-xl p-4"
                     style={{ background: 'rgba(20,184,166,0.06)', border: '1px solid rgba(20,184,166,0.2)' }}
@@ -196,7 +191,6 @@ export default function ATSChecker() {
               </div>
             )}
 
-            {/* ── Text Paste ── */}
             {mode === 'text' && (
               <div>
                 <div className="flex justify-between items-center mb-2">
@@ -214,7 +208,6 @@ export default function ATSChecker() {
               </div>
             )}
 
-            {/* ── Job Description (both modes) ── */}
             <div className="mt-4">
               <label className="text-sm font-medium text-zinc-300 mb-2 block">
                 Job Description <span className="text-zinc-600 font-normal">(optional — for keyword matching)</span>
@@ -244,7 +237,6 @@ export default function ATSChecker() {
           <AnimatePresence>
             {result && (
               <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                {/* Score Ring */}
                 <div className="card text-center">
                   <div className="relative w-32 h-32 mx-auto mb-4">
                     <svg className="w-full h-full -rotate-90" viewBox="0 0 120 120">
@@ -273,7 +265,6 @@ export default function ATSChecker() {
                   )}
                 </div>
 
-                {/* Category Scores */}
                 <div className="card">
                   <h3 className="text-sm font-semibold text-white mb-4">Category Breakdown</h3>
                   <div className="space-y-3">
@@ -303,7 +294,6 @@ export default function ATSChecker() {
                   </div>
                 </div>
 
-                {/* Format Checks */}
                 <div className="card">
                   <h3 className="text-sm font-semibold text-white mb-3">Format Checklist</h3>
                   <div className="space-y-2">
@@ -318,7 +308,6 @@ export default function ATSChecker() {
                   </div>
                 </div>
 
-                {/* JD Keywords */}
                 {result.jdMatch?.length > 0 && (
                   <div className="card">
                     <h3 className="text-sm font-semibold text-white mb-3">Job Description Match</h3>
@@ -339,7 +328,6 @@ export default function ATSChecker() {
                   </div>
                 )}
 
-                {/* Suggestions */}
                 {result.suggestions?.length > 0 && (
                   <div className="card">
                     <h3 className="text-sm font-semibold text-white mb-3">💡 Improvement Tips</h3>
@@ -366,6 +354,7 @@ export default function ATSChecker() {
               and job-specific keyword match. Upload your PDF or Word doc directly — no copy-pasting needed.
             </p>
           </section>
+
         </div>
       </ToolPage>
     </>
